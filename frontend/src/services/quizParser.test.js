@@ -23,6 +23,7 @@ describe('quizParser', () => {
       { path: 'global.quiz_test_description', value: 'Review your score before submitting.' },
       { path: 'global.quiz_test_show_icons', value: 'FALSE' },
       { path: 'global.response_sheet_id', value: 'response123' },
+      { path: 'global.response_tab_name', value: 'tab_a' },
       { path: 'global.welcome_page_def.page_id', value: 'welcome' },
       { path: 'global.welcome_page_def.page_title', value: 'Welcome Page' },
       { path: 'global.welcome_page_def.page_description', value: 'Welcome to the quiz!' },
@@ -78,6 +79,7 @@ describe('quizParser', () => {
     expect(quiz.title).toBe('Test Quiz');
     expect(quiz.description).toBe('This is a test quiz');
     expect(quiz.responseSheetId).toBe('response123');
+    expect(quiz.responseTabName).toBe('tab_a');
     expect(quiz.direction).toBe('rtl');
     expect(quiz.testEnabled).toBe(true);
     expect(quiz.minScore).toBe(80);

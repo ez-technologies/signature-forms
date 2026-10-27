@@ -321,7 +321,7 @@ function QuizDisplay({ individualQuizSheetId, onBack, onQuizConfig, resetToken }
                 responseSheetId: quiz.responseSheetId,
             });
             logger.log('Submitting quiz with answers:', withHiddenAnswers);
-            const result = await submitQuiz(individualQuizSheetId, quiz.responseSheetId, withHiddenAnswers);
+            const result = await submitQuiz(individualQuizSheetId, quiz.responseSheetId, quiz.responseTabName, withHiddenAnswers);
             if (result.success) {
                 logger.log('Quiz submitted successfully.', result);
                 setSubmissionComplete(true);

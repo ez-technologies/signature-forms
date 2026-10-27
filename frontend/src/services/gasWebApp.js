@@ -48,7 +48,7 @@ async function collectMetadata() {
 }
 
 // Function to submit quiz answers to GAS Web App
-async function submitQuiz(individualQuizSheetId, responseSheetId, quizAnswers) {
+async function submitQuiz(individualQuizSheetId, responseSheetId, responseTabName, quizAnswers) {
     const gasWebAppLink = process.env.REACT_APP_GAS_WEB_APP_URL;
 
     if (!gasWebAppLink || gasWebAppLink === 'YOUR_GAS_WEB_APP_URL_HERE') {
@@ -56,11 +56,17 @@ async function submitQuiz(individualQuizSheetId, responseSheetId, quizAnswers) {
         throw new Error('כתובת ה־GAS לא מוגדרת. יש להגדיר REACT_APP_GAS_WEB_APP_URL בקובץ .env.');
     }
 
+    if (!responseTabName || !String(responseTabName).trim()) {
+        logger.error('global.response_tab_name is missing in the quiz sheet.');
+        throw new Error('חסר global.response_tab_name בגיליון הטופס.');
+    }
+
     const metadata = await collectMetadata();
 
     const payload = {
         quizSheetId: individualQuizSheetId,
         responseSheetId: responseSheetId,
+        responseTabName: String(responseTabName).trim(),
         userAnswers: quizAnswers,
         metadata: metadata
     };

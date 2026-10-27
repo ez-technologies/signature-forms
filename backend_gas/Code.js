@@ -22,14 +22,24 @@ function ensureHeaders(sheet, headerKeys) {
   return normalizedHeaders;
 }
 
-function appendRowToSheet(sheetId, dataToAppend, answerKeys) {
+function getOrCreateTab(spreadsheet, tabName) {
+  const existing = spreadsheet.getSheetByName(tabName);
+  if (existing) {
+    return existing;
+  }
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    return spreadsheet.getSheetByName(tabName) || spreadsheet.insertSheet(tabName);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function appendRowToSheet(sheetId, tabName, dataToAppend, answerKeys) {
   Logger.log('Attempting to open sheet with ID: ' + sheetId);
   const spreadsheet = SpreadsheetApp.openById(sheetId);
-  const sheet = spreadsheet.getSheetByName('Sheet1') || spreadsheet.getSheets()[0]; // Try to get 'Sheet1', fallback to first sheet
-  if (!sheet) {
-    Logger.log(`Target sheet not found in spreadsheet with ID: ${sheetId}`);
-    throw new Error(`Target sheet not found in spreadsheet with ID: ${sheetId}`);
-  }
+  const sheet = getOrCreateTab(spreadsheet, tabName);
   Logger.log('Target sheet name: ' + sheet.getName());
 
   const headerKeys = Array.isArray(answerKeys) ? answerKeys : Object.keys(dataToAppend);
@@ -61,13 +71,16 @@ function appendRowToSheet(sheetId, dataToAppend, answerKeys) {
 
 function validateInput(data) {
   // Basic validation: ensure essential fields exist
-  if (!data || !data.quizSheetId || !data.userAnswers || !data.metadata || !data.responseSheetId) {
+  if (!data || !data.quizSheetId || !data.userAnswers || !data.metadata || !data.responseSheetId || !data.responseTabName) {
     Logger.log('Validation Error: Missing essential data. Payload: ' + JSON.stringify(data));
-    throw new Error('Missing essential data: quizSheetId, userAnswers, metadata, or responseSheetId.');
+    throw new Error('Missing essential data: quizSheetId, userAnswers, metadata, responseSheetId, or responseTabName.');
   }
   if (typeof data.userAnswers !== 'object' || data.userAnswers === null || Object.keys(data.userAnswers).length === 0) {
     Logger.log('Validation Error: userAnswers must be a non-empty object. userAnswers: ' + JSON.stringify(data.userAnswers));
     throw new Error('userAnswers must be a non-empty object (map).');
+  }
+  if (typeof data.responseTabName !== 'string' || data.responseTabName.trim() === '' || data.responseTabName.length > 100 || /[\[\]*?:\/\\]/.test(data.responseTabName)) {
+    throw new Error('responseTabName is invalid (empty, over 100 chars, or contains [ ] * ? : / \\).');
   }
   // Add more specific validation for each field if necessary
   return true;
@@ -111,6 +124,7 @@ function doPost(e) {
 
     const quizSheetId = requestBody.quizSheetId;
     const responseSheetId = requestBody.responseSheetId;
+    const responseTabName = requestBody.responseTabName.trim();
     const userAnswers = requestBody.userAnswers;
     const metadata = requestBody.metadata;
 
@@ -140,7 +154,7 @@ function doPost(e) {
     Logger.log('Data prepared for appending to sheet: ' + JSON.stringify(dataToAppend));
 
     // Append data to the response sheet using dynamic column mapping
-    appendRowToSheet(responseSheetId, dataToAppend, Object.keys(userAnswers));
+    appendRowToSheet(responseSheetId, responseTabName, dataToAppend, Object.keys(userAnswers));
     Logger.log('doPost: Row append operation completed.');
 
     response = { success: true, message: 'Quiz response recorded successfully.' };

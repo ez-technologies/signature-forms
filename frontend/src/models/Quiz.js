@@ -3,6 +3,7 @@ export class Quiz {
         this.title = '';
         this.description = '';
         this.responseSheetId = '';
+        this.responseTabName = '';
         this.direction = 'ltr';
         this.fontScaleConfig = null;
         this.testEnabled = false;

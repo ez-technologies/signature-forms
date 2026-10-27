@@ -42,6 +42,7 @@ function buildQuizFromObject(quizObject) {
     quiz.title = quizObject.global?.quiz_title || '';
     quiz.description = quizObject.global?.quiz_description || '';
     quiz.responseSheetId = quizObject.global?.response_sheet_id || '';
+    quiz.responseTabName = quizObject.global?.response_tab_name || '';
     const quizDirection = quizObject.global?.quiz_direction;
     quiz.direction = quizDirection === 'rtl' || quizDirection === 'ltr' ? quizDirection : 'ltr';
     quiz.fontScaleConfig = extractFontScaleConfig(quizObject.global || {});
