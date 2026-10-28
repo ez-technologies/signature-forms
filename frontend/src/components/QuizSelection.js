@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchMasterSheet } from '../services/googleSheets';
 import logger from '../utils/logger';
 import { useQuiz } from '../context/QuizContext';
+import { resolveMasterSheetId } from '../utils/masterSheetId';
 
 function QuizSelection({ onQuizSelect, onMasterConfig }) {
     const { contentData } = useQuiz();
@@ -14,25 +15,21 @@ function QuizSelection({ onQuizSelect, onMasterConfig }) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const queryParams = new URLSearchParams(window.location.search);
-        const sheetIdParam = queryParams.get('sheetId');
-        const shortIdParam = queryParams.get('s');
-        const masterSheetSuffix = process.env.REACT_APP_MASTER_SHEET_SUFFIX || '';
-        let masterSheetId = sheetIdParam;
-        if (!masterSheetId && shortIdParam) {
-            if (!masterSheetSuffix) {
-                setError(t('error_missing_sheet_suffix', 'נמסר מזהה קצר ללא סיומת מוגדרת.'));
-                logger.error('Short sheet id provided but REACT_APP_MASTER_SHEET_SUFFIX is missing.');
-                setLoading(false);
-                return;
-            }
-            masterSheetId = `${shortIdParam}${masterSheetSuffix}`;
-        }
+        const { id: masterSheetId, error: idError } = resolveMasterSheetId(
+            window.location.search,
+            process.env.REACT_APP_MASTER_SHEET_SUFFIX || ''
+        );
         logger.log('Master sheet ID from URL:', masterSheetId);
 
-        if (!masterSheetId) {
+        if (idError === 'missing_suffix') {
+            setError(t('error_missing_sheet_suffix', 'נמסר מזהה קצר ללא סיומת מוגדרת.'));
+            logger.error('Short sheet id provided but REACT_APP_MASTER_SHEET_SUFFIX is missing.');
+            setLoading(false);
+            return;
+        }
+        if (idError) {
             setError(t('error_no_sheet_id', 'פרמטר s הוא חובה.'));
-            logger.error('No sheetId or s parameter found in URL.');
+            logger.error('No fs, sheetId or s parameter found in URL.');
             setLoading(false);
             return;
         }
