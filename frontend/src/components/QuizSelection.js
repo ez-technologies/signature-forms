@@ -5,7 +5,7 @@ import { useQuiz } from '../context/QuizContext';
 import { resolveMasterSheetId } from '../utils/masterSheetId';
 
 function QuizSelection({ onQuizSelect, onMasterConfig }) {
-    const { contentData } = useQuiz();
+    const { contentData, setMasterSettings } = useQuiz();
     const t = (key, fallback) => contentData[key] || fallback;
     const [masterQuizTitle, setMasterQuizTitle] = useState('בחירת טופס');
     const [masterQuizDescription, setMasterQuizDescription] = useState('בחר טופס מהרשימה שלמטה.');
@@ -37,7 +37,14 @@ function QuizSelection({ onQuizSelect, onMasterConfig }) {
         const loadMasterSheet = async () => {
             try {
                 setLoading(true);
-                const { masterQuizTitle, masterQuizDescription, masterDirection, masterFontScaleConfig, availableQuizzes } = await fetchMasterSheet(masterSheetId);
+                const { masterQuizTitle, masterQuizDescription, masterDirection, masterFontScaleConfig, availableQuizzes, masterSettings } = await fetchMasterSheet(masterSheetId);
+                if (!masterSettings || masterSettings.missing.length > 0) {
+                    const missing = masterSettings ? masterSettings.missing.join(', ') : 'master sheet unavailable';
+                    logger.error('Master sheet settings missing:', missing);
+                    setError(`חסרות הגדרות בגיליון הראשי: ${missing}`);
+                    return;
+                }
+                setMasterSettings(masterSettings);
                 setMasterQuizTitle(masterQuizTitle);
                 setMasterQuizDescription(masterQuizDescription);
                 setMasterDirection(masterDirection === 'rtl' ? 'rtl' : 'ltr');

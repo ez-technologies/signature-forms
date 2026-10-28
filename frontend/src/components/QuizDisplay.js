@@ -7,7 +7,7 @@ import { normalizeRegexString } from '../utils/validation';
 import { useQuiz } from '../context/QuizContext';
 
 function QuizDisplay({ individualQuizSheetId, onBack, onQuizConfig, resetToken }) {
-    const { contentData } = useQuiz();
+    const { contentData, gasWebAppUrl } = useQuiz();
     const t = (key, fallback) => contentData[key] || fallback;
     const [quiz, setQuiz] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -321,7 +321,7 @@ function QuizDisplay({ individualQuizSheetId, onBack, onQuizConfig, resetToken }
                 responseSheetId: quiz.responseSheetId,
             });
             logger.log('Submitting quiz with answers:', withHiddenAnswers);
-            const result = await submitQuiz(individualQuizSheetId, quiz.responseSheetId, quiz.responseTabName, withHiddenAnswers);
+            const result = await submitQuiz(gasWebAppUrl, individualQuizSheetId, quiz.responseSheetId, quiz.responseTabName, withHiddenAnswers);
             if (result.success) {
                 logger.log('Quiz submitted successfully.', result);
                 setSubmissionComplete(true);

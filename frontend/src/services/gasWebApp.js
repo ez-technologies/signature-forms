@@ -48,12 +48,10 @@ async function collectMetadata() {
 }
 
 // Function to submit quiz answers to GAS Web App
-async function submitQuiz(individualQuizSheetId, responseSheetId, responseTabName, quizAnswers) {
-    const gasWebAppLink = process.env.REACT_APP_GAS_WEB_APP_URL;
-
-    if (!gasWebAppLink || gasWebAppLink === 'YOUR_GAS_WEB_APP_URL_HERE') {
-        logger.error('GAS Web App URL is not configured. Please set REACT_APP_GAS_WEB_APP_URL in your .env file.');
-        throw new Error('כתובת ה־GAS לא מוגדרת. יש להגדיר REACT_APP_GAS_WEB_APP_URL בקובץ .env.');
+async function submitQuiz(gasWebAppLink, individualQuizSheetId, responseSheetId, responseTabName, quizAnswers) {
+    if (!gasWebAppLink) {
+        logger.error('GAS Web App URL is missing (global.gas_web_app_url in the master sheet).');
+        throw new Error('כתובת ה־GAS לא מוגדרת. יש להגדיר global.gas_web_app_url בגיליון הראשי.');
     }
 
     if (!responseTabName || !String(responseTabName).trim()) {

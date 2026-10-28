@@ -9,9 +9,18 @@ export const QuizProvider = ({ children }) => {
     const [loadingContent, setLoadingContent] = useState(true);
     const [contentError, setContentError] = useState(null);
 
-    const contentSheetId = process.env.REACT_APP_CONTENT_SHEET_ID;
+    const [contentSheetId, setContentSheetId] = useState('');
+    const [gasWebAppUrl, setGasWebAppUrl] = useState('');
+
+    const setMasterSettings = ({ contentSheetId: nextContentSheetId, gasWebAppUrl: nextGasWebAppUrl }) => {
+        setContentSheetId(nextContentSheetId || '');
+        setGasWebAppUrl(nextGasWebAppUrl || '');
+    };
 
     useEffect(() => {
+        if (!contentSheetId) {
+            return;
+        }
         const loadContent = async () => {
             logger.log('Loading content data with ID:', contentSheetId);
             try {
@@ -33,6 +42,8 @@ export const QuizProvider = ({ children }) => {
         contentData,
         loadingContent,
         contentError,
+        gasWebAppUrl,
+        setMasterSettings,
     };
 
     return (
