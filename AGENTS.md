@@ -31,4 +31,4 @@
 
 ## Configuration & External Services
 - The app reads quiz data from Google Sheets CSV exports; master sheet IDs are passed via `?sheetId=...`.
-- Set `REACT_APP_GAS_WEB_APP_URL` in a `.env` file for frontend submissions (see `frontend/src/services/gasWebApp.js`).
+- The master sheet (`main_quiz`) holds `global.content_sheet_id` and `global.gas_web_app_url`; only `REACT_APP_MASTER_SHEET_SUFFIX` lives in `frontend/.env`. Each quiz sheet sets `global.response_sheet_id` and `global.response_tab_name`. Open the app with `?s=<first 8 chars>` or `?fs=<full master sheet id>`.

@@ -1,11 +1,24 @@
+// Manual test: set RESPONSE_SHEET_ID and TAB_NAME to a spreadsheet you own, then run testAnswer from the editor.
+// It appends one row to that tab (creating the tab if needed).
 function testAnswer() {
-  let response = '{"quizSheetId":"1H5gy4tlJqZmyLSEREx4jTR9UgzAbY9xzUxicCtnmiKY","responseSheetId":"1kqzFexENS8pysXXJ6TZqvscrC3MV6QpNWpU1o2wgnKw","responseTabName":"test_tab","userAnswers":{"Q1":"h2o","Q2":"Mars","Q3":"12","Q4":"3","F1":"2026-02-11","F2":"wer","F3":"13:03","F4":"2026-01-08T11:03","F5":"2134"},"metadata":{"userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","timestamp":"2026-01-19T09:03:47.690Z","latitude":32.08150493420935,"longitude":34.79514898300031,"accuracy":200.5677490234375,"locationStatus":"granted"}}';
-  
-  let e = {
-    postData: {
-      contents: response
-    }
-  }
+  const RESPONSE_SHEET_ID = 'YOUR_RESPONSE_SPREADSHEET_ID';
+  const TAB_NAME = 'test_tab';
 
-  doPost(e);
+  const payload = {
+    quizSheetId: 'test_quiz',
+    responseSheetId: RESPONSE_SHEET_ID,
+    responseTabName: TAB_NAME,
+    userAnswers: { Q1: 'answer 1', Q2: 'answer 2' },
+    metadata: {
+      userAgent: 'manual test',
+      Timestamp: new Date().toISOString(),
+      latitude: null,
+      longitude: null,
+      accuracy: null,
+      locationStatus: 'not_supported',
+    },
+  };
+
+  const result = doPost({ postData: { contents: JSON.stringify(payload) } });
+  Logger.log(result.getContent());
 }

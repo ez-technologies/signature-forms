@@ -45,7 +45,7 @@ The backend is a Google Apps Script web app. To deploy and run it, follow these 
     ```bash
     clasp deployments
     ```
-7.  **Update the frontend:** The `gasWebAppLink` constant in `frontend/script.js` needs to be updated with the deployed web app URL.
+7.  **Update the frontend:** Put the deployed web app URL in the master sheet row `global.gas_web_app_url`.
 
 ## Development Conventions
 

@@ -168,13 +168,7 @@ function doPost(e) {
   return output;
 }
 
-// Run once from the editor to grant the spreadsheets permission. Read-only: opens the response spreadsheet and logs its name.
-function authorize() {
-  const spreadsheet = SpreadsheetApp.openById('1yd9c8dcaqLp4vQdDbGjqVYnMHBIcba9a646S-leeQgA');
-  Logger.log('Authorized. Spreadsheet: ' + spreadsheet.getName() + ' | tabs: ' + spreadsheet.getSheets().map(s => s.getName()).join(', '));
-}
-
-// Run from the editor. Uses a temporary spreadsheet (never your response data) to check that a missing tab gets created.
+// Run from the editor (also grants the Sheets permission on first run). Uses a temporary spreadsheet, never real response data, to check that a missing tab gets created.
 function testTabCreation() {
   const spreadsheet = SpreadsheetApp.create('tmp-tab-creation-test (safe to delete)');
   const tabName = 'new_tab_' + Date.now();
