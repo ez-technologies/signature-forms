@@ -173,3 +173,20 @@ function authorize() {
   const spreadsheet = SpreadsheetApp.openById('1yd9c8dcaqLp4vQdDbGjqVYnMHBIcba9a646S-leeQgA');
   Logger.log('Authorized. Spreadsheet: ' + spreadsheet.getName() + ' | tabs: ' + spreadsheet.getSheets().map(s => s.getName()).join(', '));
 }
+
+// Run from the editor. Uses a temporary spreadsheet (never your response data) to check that a missing tab gets created.
+function testTabCreation() {
+  const spreadsheet = SpreadsheetApp.create('tmp-tab-creation-test (safe to delete)');
+  const tabName = 'new_tab_' + Date.now();
+  const before = spreadsheet.getSheets().map(s => s.getName());
+  appendRowToSheet(spreadsheet.getId(), tabName, { Q1: 'a', Q2: 'b' }, ['Q1', 'Q2']);
+  appendRowToSheet(spreadsheet.getId(), tabName, { Q1: 'c', Q2: 'd' }, ['Q1', 'Q2']);
+  const tab = spreadsheet.getSheetByName(tabName);
+  const after = spreadsheet.getSheets().map(s => s.getName());
+  const values = tab ? tab.getDataRange().getValues() : [];
+  Logger.log('tabs before: ' + JSON.stringify(before));
+  Logger.log('tabs after:  ' + JSON.stringify(after));
+  Logger.log('tab values:  ' + JSON.stringify(values));
+  const ok = !!tab && after.length === before.length + 1 && values.length === 3 && values[0].join() === 'Q1,Q2';
+  Logger.log((ok ? 'PASS' : 'FAIL') + ': tab created once, header + 2 rows. Delete this file: ' + spreadsheet.getUrl());
+}
