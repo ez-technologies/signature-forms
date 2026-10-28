@@ -2,7 +2,7 @@
   "name": "react-frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://eisenlabsio.github.io/forms_5280",
+  "homepage": "https://ez-technologies.github.io/signature-forms",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
