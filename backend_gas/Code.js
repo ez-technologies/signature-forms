@@ -167,3 +167,9 @@ function doPost(e) {
   output.setContent(JSON.stringify(response)).setMimeType(ContentService.MimeType.JSON);
   return output;
 }
+
+// Run once from the editor to grant the spreadsheets permission. Read-only: opens the response spreadsheet and logs its name.
+function authorize() {
+  const spreadsheet = SpreadsheetApp.openById('1yd9c8dcaqLp4vQdDbGjqVYnMHBIcba9a646S-leeQgA');
+  Logger.log('Authorized. Spreadsheet: ' + spreadsheet.getName() + ' | tabs: ' + spreadsheet.getSheets().map(s => s.getName()).join(', '));
+}
