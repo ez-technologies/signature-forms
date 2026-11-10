@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchMasterSheet } from '../services/googleSheets';
 import logger from '../utils/logger';
 import { useQuiz } from '../context/QuizContext';
-import { resolveMasterSheetId } from '../utils/masterSheetId';
+import { resolveMasterSheetId, parseSuffixMap } from '../utils/masterSheetId';
 
 function QuizSelection({ onQuizSelect, onMasterConfig }) {
     const { contentData, setMasterSettings } = useQuiz();
@@ -17,13 +17,14 @@ function QuizSelection({ onQuizSelect, onMasterConfig }) {
     useEffect(() => {
         const { id: masterSheetId, error: idError } = resolveMasterSheetId(
             window.location.search,
-            process.env.REACT_APP_MASTER_SHEET_SUFFIX || ''
+            process.env.REACT_APP_MASTER_SHEET_SUFFIX || '',
+            parseSuffixMap(process.env.REACT_APP_MASTER_SHEET_SUFFIXES)
         );
         logger.log('Master sheet ID from URL:', masterSheetId);
 
         if (idError === 'missing_suffix') {
             setError(t('error_missing_sheet_suffix', 'נמסר מזהה קצר ללא סיומת מוגדרת.'));
-            logger.error('Short sheet id provided but REACT_APP_MASTER_SHEET_SUFFIX is missing.');
+            logger.error('Short sheet id has no suffix in REACT_APP_MASTER_SHEET_SUFFIXES and REACT_APP_MASTER_SHEET_SUFFIX is missing.');
             setLoading(false);
             return;
         }
